@@ -1,8 +1,12 @@
 package br.com.alura.screenmatch.model;
 
+import br.com.alura.screenmatch.exception.ErroDeConversaoDeAnoException;
+import com.google.gson.annotations.SerializedName;
+
 public class Titulo implements Comparable<Titulo>{
 
     private String nome;
+
     private int anoDeLacamento;
     private boolean incluiNoPlano;
     private double somaDasAvaliacoes;
@@ -12,6 +16,18 @@ public class Titulo implements Comparable<Titulo>{
     public Titulo(String nome, int anoDeLacamento) {
         this.nome = nome;
         this.anoDeLacamento = anoDeLacamento;
+    }
+
+    public Titulo(TituloDTO tituloDTO) {
+        this.nome = tituloDTO.title();
+
+        if(tituloDTO.year().length() > 4){
+            throw new ErroDeConversaoDeAnoException("Não consegui converter o ano para int");
+        }
+
+        this.anoDeLacamento = Integer.valueOf(tituloDTO.year());
+        this.anoDeLacamento = Integer.valueOf(tituloDTO.year());
+        this.duracaoEmMinutos = Integer.valueOf(tituloDTO.runtime().substring(0, 2));
     }
 
     public void setNome(String nome) {
@@ -70,10 +86,14 @@ public class Titulo implements Comparable<Titulo>{
         var tipo = "";
         if(this instanceof Filme){
             tipo = "Filme";
-        }else {
+        }else if (this instanceof Serie){
             tipo = "Serie";
+        }else {
+            tipo = "Titulo";
         }
-        return tipo +": " + this.getNome() + "(" + this.getAnoDeLacamento() + ")";
+        return tipo +": " + this.getNome() +
+                " (" + this.getAnoDeLacamento() + ")" +
+                " (" + this.getDuracaoEmMinutos() + "min)";
     }
 
     @Override
